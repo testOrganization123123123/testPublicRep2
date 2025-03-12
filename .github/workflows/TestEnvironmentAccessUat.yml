@@ -1,0 +1,32 @@
+name: Test Environment Access Uat
+
+on:
+  push:
+    branches:
+      - uat
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  test-access:
+    runs-on: ubuntu-latest
+    environment: uatEnviroment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load Environment Secret
+        env:
+          CREDENTIAL: ${{ secrets.CREDENTIAL }}
+        run: |
+          if [ -z "$CREDENTIAL" ]; then
+            echo "❌ Secret CREDENTIAL is not available!"
+            exit 1
+          fi
+          echo "✅ Secret CREDENTIAL is set."
+
+      - name: Test Access to ${{ matrix.environment }}
+        env:
+          CREDENTIAL: ${{ secrets.CREDENTIAL }}
+        run: |
+          echo "🔍 Testing access to ${{ matrix.environment }}..."
